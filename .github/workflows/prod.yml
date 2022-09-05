@@ -19,7 +19,7 @@ jobs:
               with:
                   switches: -av --delete --exclude-from '.gitignore' --exclude '.git'
                   path: ./
-                  remote_path: /var/www/domen.comjournal.domen.com
+                  remote_path: /var/www/domen.com
                   remote_host: app.domen.com
                   remote_port: 2204
                   remote_user: www-git
@@ -33,9 +33,9 @@ jobs:
 #                  key: ${{ secrets.REPO_DEPLOY_KEY }}
 #                  port: 2204
 #                  script: |
-#                      cd /var/www/domen.comjournal.domen.com
-#                      docker-compose stop domen.comjournal
-#                      docker-compose rm -f domen.comjournal
-#                      docker-compose build domen.comjournal
-#                      docker-compose up -d domen.comjournal
+#                      cd /var/www/domen.com
+#                      docker-compose stop journal
+#                      docker-compose rm -f journal
+#                      docker-compose build journal
+#                      docker-compose up -d journal
 #
