@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  domen.comjournal:
+    container_name: "domen.comjournal"
+    build:
+      context: .
+      network: host
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    ports:
+      - "1487:1487"
+    volumes:
+      - ./:/var/www/domen.comjournal.domen.com
+
+    command: >
+      sh -c "
+        poetry update &&
+        cd ./app &&
+        alembic upgrade head &&
+        python3 main.py"

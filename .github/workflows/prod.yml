@@ -1,0 +1,41 @@
+name: Production
+
+on:
+    push:
+        branches: 
+             - main
+
+jobs:
+    build:
+        runs-on: self-hosted
+
+        steps:
+            - uses: actions/checkout@v2
+              with:
+                  ref: main
+
+            - name: Rsync to Test
+              uses: burnett01/rsync-deployments@4.1
+              with:
+                  switches: -av --delete --exclude-from '.gitignore' --exclude '.git'
+                  path: ./
+                  remote_path: /var/www/domen.comjournal.domen.com
+                  remote_host: app.domen.com
+                  remote_port: 2204
+                  remote_user: www-git
+                  remote_key: ${{ secrets.REPO_DEPLOY_KEY }}
+
+#            - name: Docker Rebuild conteiner
+#              uses: appleboy/ssh-action@master
+#              with:
+#                  host: app.domen.com
+#                  username: www-git
+#                  key: ${{ secrets.REPO_DEPLOY_KEY }}
+#                  port: 2204
+#                  script: |
+#                      cd /var/www/domen.comjournal.domen.com
+#                      docker-compose stop domen.comjournal
+#                      docker-compose rm -f domen.comjournal
+#                      docker-compose build domen.comjournal
+#                      docker-compose up -d domen.comjournal
+#

@@ -1,0 +1,50 @@
+name: Develop
+
+on:
+    push:
+        branches: 
+         - dev
+
+jobs:
+    build:
+        runs-on: self-hosted
+
+        steps:
+            - uses: actions/checkout@v2
+              with:
+                  ref: dev
+
+            - name: Change permissions
+              uses: appleboy/ssh-action@master
+              with:
+                  host: app.domen.com
+                  username: git
+                  key: ${{ secrets.REPO_DEPLOY_KEY }}
+                  port: 2203
+                  script: |
+                      sudo chown -R git:git /var/www/domen.comjournal.domen.com/
+
+            - name: Rsync to Test
+              uses: burnett01/rsync-deployments@4.1
+              with:
+                  switches: -av --delete --exclude-from '.gitignore' --exclude '.git'
+                  path: ./
+                  remote_path: /var/www/domen.comjournal.domen.com
+                  remote_host: app.domen.com
+                  remote_port: 2203
+                  remote_user: git
+                  remote_key: ${{ secrets.REPO_DEPLOY_KEY }}
+
+            - name: Docker Rebuild conteiner
+              uses: appleboy/ssh-action@master
+              with:
+                  host: app.domen.com
+                  username: git
+                  key: ${{ secrets.REPO_DEPLOY_KEY }}
+                  port: 2203
+                  script: |
+                      cd /var/www/domen.comjournal.domen.com
+                      docker-compose stop domen.comjournal
+                      docker-compose rm -f domen.comjournal
+                      docker-compose build domen.comjournal
+                      docker-compose up -d domen.comjournal
